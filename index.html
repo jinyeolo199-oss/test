@@ -235,6 +235,52 @@
       font-size: 0.73rem; margin-top: 8px;
     }
 
+    /* ── 기타 섹션 ── */
+    #infoBody { overflow: hidden; transition: max-height 0.35s ease; max-height: 2000px; }
+    #infoBody.collapsed { max-height: 0; }
+
+    .info-section { margin-bottom: 22px; }
+    .info-section-title {
+      font-size: 0.88rem; font-weight: 700;
+      color: var(--text); margin-bottom: 12px;
+    }
+
+    .info-table-wrap { overflow-x: auto; }
+    .info-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+    .info-table th, .info-table td {
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      text-align: left;
+      line-height: 1.5;
+    }
+    .info-table th {
+      background: var(--surf2);
+      color: var(--blue); font-weight: 600;
+      white-space: nowrap;
+    }
+    .info-table td:first-child {
+      white-space: nowrap; color: var(--gold);
+      font-weight: 600; background: rgba(227,179,65,.05);
+    }
+    .info-table tr:hover td { background: rgba(255,255,255,.03); }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .info-box {
+      background: var(--surf2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .info-box-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 5px; }
+    .info-box-val   { font-size: 0.88rem; color: var(--text); font-weight: 500; }
+
     @media (max-width: 520px) {
       .form-grid { grid-template-columns: 1fr; }
       .prices-grid { grid-template-columns: repeat(3, 1fr); }
@@ -354,10 +400,94 @@
     </div>
   </div>
 
+  <!-- ④ 기타 (도구 설명) -->
+  <div class="card" id="secInfo">
+    <div class="card-title" style="cursor:pointer;justify-content:space-between;" onclick="toggleInfo()">
+      <span style="display:flex;align-items:center;gap:8px;">
+        <span style="display:inline-block;width:4px;height:18px;background:var(--blue);border-radius:2px;"></span>
+        기타 · 도구 설명
+      </span>
+      <span id="infoArrow" style="color:var(--muted);font-size:1.1rem;transition:transform .25s;">▼</span>
+    </div>
+
+    <div id="infoBody">
+
+      <div class="info-section">
+        <div class="info-section-title">📋 기능 요약</div>
+        <div class="info-table-wrap">
+          <table class="info-table">
+            <thead>
+              <tr><th>단계</th><th>기능</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>① 기본 설정</td><td>기초금액 입력, 공사 종류 선택, 예상 경쟁업체 수, 사정율, 낙찰하한율 설정</td></tr>
+              <tr><td>② 예비가격 생성</td><td>기초금액 기준 ±2% 범위 내 15개 예비가격 무작위 생성 (재생성 가능)</td></tr>
+              <tr><td>직접 선택 모드</td><td>15개 카드 중 원하는 2개를 직접 클릭하여 선택</td></tr>
+              <tr><td>자동 추천 모드</td><td>몬테카를로 시뮬레이션으로 가장 많이 선택될 것으로 예측된 번호 2개 자동 추천</td></tr>
+              <tr><td>③ 결과 분석</td><td>예상 예정가격 · 추천 투찰금액 · 낙찰하한금액 · 투찰 유효 범위 출력</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-section-title">📐 예비가격 생성 방식</div>
+        <div class="info-grid">
+          <div class="info-box">
+            <div class="info-box-label">기준</div>
+            <div class="info-box-val">나라장터 복수예비가격 공식</div>
+          </div>
+          <div class="info-box">
+            <div class="info-box-label">생성 범위</div>
+            <div class="info-box-val">기초금액 <strong style="color:var(--gold);">× 98% ~ 102%</strong></div>
+          </div>
+          <div class="info-box">
+            <div class="info-box-label">생성 방법</div>
+            <div class="info-box-val">해당 범위 내 15개 난수 무작위 생성 후 오름차순 정렬</div>
+          </div>
+          <div class="info-box">
+            <div class="info-box-label">예시 (기초금액 1억)</div>
+            <div class="info-box-val">98,000,000원 ~ 102,000,000원 사이 15개</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-section" style="margin-bottom:0;">
+        <div class="info-section-title">⚙️ 낙찰하한율 기본값</div>
+        <div class="info-grid" style="grid-template-columns:repeat(3,1fr);">
+          <div class="info-box">
+            <div class="info-box-label">일반공사</div>
+            <div class="info-box-val" style="color:var(--green);font-size:1.05rem;font-weight:700;">87.745%</div>
+          </div>
+          <div class="info-box">
+            <div class="info-box-label">전문공사</div>
+            <div class="info-box-val" style="color:var(--green);font-size:1.05rem;font-weight:700;">87.745%</div>
+          </div>
+          <div class="info-box">
+            <div class="info-box-label">용역</div>
+            <div class="info-box-val" style="color:var(--blue);font-size:1.05rem;font-weight:700;">79.25%</div>
+          </div>
+        </div>
+        <p style="font-size:0.75rem;color:var(--muted);margin-top:10px;">
+          ※ 위 값은 국가계약법 시행규칙 기준 기본값이며, 발주기관·공사 규모에 따라 다를 수 있습니다. 기본 설정란에서 직접 수정하여 사용하세요.
+        </p>
+      </div>
+
+    </div><!-- /infoBody -->
+  </div>
+
   <footer>나라장터 복수예비가격 기준 (기초금액 ±2%) · 시뮬레이션 50,000회</footer>
 </div>
 
 <script>
+// ── 기타 섹션 토글 ────────────────────────────────────────
+function toggleInfo() {
+  const body  = $('infoBody');
+  const arrow = $('infoArrow');
+  const collapsed = body.classList.toggle('collapsed');
+  arrow.style.transform = collapsed ? 'rotate(-90deg)' : 'rotate(0deg)';
+}
+
 // ── 낙찰하한율 기본값 ──────────────────────────────────────
 const DEFAULT_RATES = { '일반공사': 87.745, '전문공사': 87.745, '용역': 79.25 };
 
