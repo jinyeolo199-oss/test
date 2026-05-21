@@ -18,6 +18,7 @@
       --gold:    #e3b341;
       --green:   #3fb950;
       --red:     #f85149;
+      --purple:  #bc8cff;
     }
 
     body {
@@ -28,7 +29,7 @@
       padding: 28px 16px 60px;
     }
 
-    .wrap { max-width: 780px; margin: 0 auto; }
+    .wrap { max-width: 820px; margin: 0 auto; }
 
     /* ── Header ── */
     header { text-align: center; margin-bottom: 32px; }
@@ -46,20 +47,13 @@
     }
 
     .card-title {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--blue);
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      font-size: 0.95rem; font-weight: 700;
+      color: var(--blue); margin-bottom: 20px;
+      display: flex; align-items: center; gap: 8px;
     }
-    .card-title::before {
-      content: '';
-      display: inline-block;
-      width: 4px; height: 18px;
-      background: var(--blue);
-      border-radius: 2px;
+    .card-title .bar {
+      display: inline-block; width: 4px; height: 18px;
+      background: var(--blue); border-radius: 2px; flex-shrink: 0;
     }
 
     /* ── Form ── */
@@ -69,15 +63,11 @@
     label { font-size: 0.82rem; color: var(--muted); font-weight: 500; }
 
     input, select {
-      background: var(--surf2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      font-size: 0.95rem;
-      padding: 10px 12px;
-      outline: none;
-      width: 100%;
-      transition: border-color 0.2s;
+      background: var(--surf2); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text);
+      font-size: 0.95rem; padding: 10px 12px;
+      outline: none; width: 100%;
+      transition: border-color .2s;
     }
     input:focus, select:focus { border-color: var(--blue); }
     select option { background: var(--surf); }
@@ -89,28 +79,23 @@
       transform: translateY(-50%);
       color: var(--muted); font-size: 0.82rem; pointer-events: none;
     }
-
     .amount-hint { font-size: 0.78rem; color: var(--blue); margin-top: 4px; min-height: 16px; }
 
     /* ── Buttons ── */
     .btn {
       border: none; border-radius: 10px; cursor: pointer;
       font-size: 0.95rem; font-weight: 700;
-      padding: 12px 20px;
-      transition: all 0.18s;
-      width: 100%;
+      padding: 12px 20px; transition: all .18s; width: 100%;
     }
-    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn:disabled { opacity: .4; cursor: not-allowed; transform: none !important; }
     .btn-blue {
       background: linear-gradient(135deg, #1f6feb, #388bfd);
-      color: #fff;
-      box-shadow: 0 4px 16px rgba(31,111,235,.3);
+      color: #fff; box-shadow: 0 4px 16px rgba(31,111,235,.3);
     }
     .btn-blue:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(31,111,235,.4); }
     .btn-gold {
       background: linear-gradient(135deg, #c98000, #e3b341);
-      color: #1a1100;
-      box-shadow: 0 4px 16px rgba(227,179,65,.3);
+      color: #1a1100; box-shadow: 0 4px 16px rgba(227,179,65,.3);
     }
     .btn-gold:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(227,179,65,.4); }
     .btn-sm {
@@ -130,21 +115,28 @@
     .tab {
       flex: 1; padding: 9px; text-align: center;
       border-radius: 7px; cursor: pointer;
-      font-size: 0.88rem; font-weight: 600;
+      font-size: 0.85rem; font-weight: 600;
       color: var(--muted); border: none; background: transparent;
-      transition: all 0.18s;
+      transition: all .18s;
     }
     .tab.active { background: var(--blue); color: #fff; }
 
-    /* ── Info note ── */
+    /* ── Note ── */
     .note {
       font-size: 0.8rem; color: var(--muted);
       background: rgba(88,166,255,.08);
       border: 1px solid rgba(88,166,255,.2);
       border-radius: 8px; padding: 10px 14px;
-      margin-bottom: 14px;
-      min-height: 38px;
+      margin-bottom: 16px; min-height: 38px; line-height: 1.5;
     }
+
+    /* ── Progress badge ── */
+    .progress-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .progress-txt { font-size: 0.82rem; color: var(--muted); }
+    .progress-count { font-size: 0.88rem; font-weight: 700; color: var(--gold); }
 
     /* ── Price grid ── */
     .prices-grid {
@@ -160,132 +152,133 @@
       padding: 10px 6px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.18s;
+      transition: all .18s;
       position: relative;
       user-select: none;
     }
-    .price-card:hover { border-color: var(--blue); transform: translateY(-2px); }
-    .price-card.selected {
-      border-color: var(--gold);
-      background: rgba(227,179,65,.12);
+    .price-card:hover:not(.locked):not(.dimmed) {
+      border-color: var(--blue); transform: translateY(-2px);
     }
-    .price-card.recommended {
+    .price-card.dimmed { opacity: .35; cursor: default; }
+
+    /* 자동 선택: 초록 */
+    .price-card.auto {
       border-color: var(--green);
       background: rgba(63,185,80,.1);
     }
-    .price-card.recommended.selected {
+    /* 직접 선택: 골드 */
+    .price-card.manual {
       border-color: var(--gold);
-      background: rgba(227,179,65,.12);
+      background: rgba(227,179,65,.1);
     }
+    /* 자동 + 직접이 겹칠 일은 없지만 혼합 표시용 */
 
-    .p-num { font-size: 0.72rem; color: var(--muted); margin-bottom: 3px; }
-    .p-man { font-size: 0.88rem; font-weight: 700; color: var(--text); }
-    .p-won { font-size: 0.68rem; color: var(--muted); }
-    .p-freq { font-size: 0.68rem; color: var(--green); margin-top: 3px; }
+    .p-num  { font-size: 0.7rem;  color: var(--muted); margin-bottom: 3px; }
+    .p-man  { font-size: 0.88rem; font-weight: 700; color: var(--text); }
+    .p-won  { font-size: 0.67rem; color: var(--muted); }
+    .p-freq { font-size: 0.67rem; color: var(--green); margin-top: 3px; }
 
-    .badge {
-      position: absolute; top: -8px; right: -8px;
+    .badge-auto {
+      position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
       background: var(--green); color: #0d1117;
-      font-size: 0.6rem; font-weight: 800;
-      border-radius: 5px; padding: 2px 5px;
+      font-size: 0.58rem; font-weight: 800;
+      border-radius: 5px; padding: 2px 6px;
+      white-space: nowrap;
+    }
+    .badge-manual {
+      position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+      background: var(--gold); color: #1a1100;
+      font-size: 0.58rem; font-weight: 800;
+      border-radius: 5px; padding: 2px 6px;
+      white-space: nowrap;
     }
 
-    /* ── Result ── */
-    .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-    .res-item {
-      background: var(--surf2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 16px;
+    /* ── 선택된 4개 요약 ── */
+    .selected-summary {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; margin: 18px 0;
     }
-    .res-label { font-size: 0.78rem; color: var(--muted); margin-bottom: 6px; }
-    .res-val { font-size: 1.05rem; font-weight: 700; }
-    .res-val.gold { color: var(--gold); }
-    .res-val.green { color: var(--green); }
-    .res-val.blue { color: var(--blue); }
-    .res-val.red { color: var(--red); }
-    .res-sub { font-size: 0.73rem; color: var(--muted); margin-top: 4px; }
-
-    .selected-balls {
-      display: flex; align-items: center;
-      justify-content: center; gap: 10px;
-      margin: 0 0 20px;
+    .sel-item {
+      border-radius: 10px; padding: 12px 14px;
+      display: flex; align-items: center; gap: 12px;
     }
-    .ball {
-      width: 54px; height: 54px; border-radius: 50%;
+    .sel-item.type-auto   { background: rgba(63,185,80,.12);  border: 1px solid rgba(63,185,80,.3); }
+    .sel-item.type-manual { background: rgba(227,179,65,.1);  border: 1px solid rgba(227,179,65,.3); }
+
+    .sel-circle {
+      width: 38px; height: 38px; border-radius: 50%;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      font-weight: 800;
+      font-weight: 800; font-size: 0.88rem; flex-shrink: 0;
     }
-    .ball-gold {
-      background: radial-gradient(circle at 35% 35%, #f5d76e, #c98000);
-      color: #1a1100;
-      box-shadow: 0 4px 14px rgba(227,160,8,.4);
+    .sel-circle.auto   { background: radial-gradient(circle at 35% 35%, #6ee77a, #2d8f3a); color: #fff; box-shadow: 0 3px 10px rgba(63,185,80,.4); }
+    .sel-circle.manual { background: radial-gradient(circle at 35% 35%, #f5d76e, #c98000); color: #1a1100; box-shadow: 0 3px 10px rgba(227,179,65,.4); }
+
+    .sel-info { flex: 1; min-width: 0; }
+    .sel-type  { font-size: 0.7rem; margin-bottom: 2px; font-weight: 700; }
+    .sel-type.auto   { color: var(--green); }
+    .sel-type.manual { color: var(--gold); }
+    .sel-price { font-size: 0.88rem; font-weight: 700; color: var(--text); }
+
+    .avg-row {
+      background: rgba(88,166,255,.08);
+      border: 1px solid rgba(88,166,255,.2);
+      border-radius: 10px;
+      padding: 14px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px;
     }
-    .ball span { font-size: 1.1rem; }
-    .ball small { font-size: 0.55rem; color: rgba(0,0,0,.6); margin-top: -2px; }
+    .avg-label { font-size: 0.82rem; color: var(--muted); }
+    .avg-val   { font-size: 1.15rem; font-weight: 800; color: var(--gold); }
 
-    .plus-icon { color: var(--muted); font-size: 1.3rem; }
+    /* ── Result grid ── */
+    .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .res-item {
+      background: var(--surf2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px;
+    }
+    .res-label { font-size: 0.78rem; color: var(--muted); margin-bottom: 6px; }
+    .res-val   { font-size: 1.05rem; font-weight: 700; }
+    .res-val.green { color: var(--green); }
+    .res-val.blue  { color: var(--blue); }
+    .res-val.red   { color: var(--red); }
+    .res-sub { font-size: 0.73rem; color: var(--muted); margin-top: 4px; }
 
-    .dis { display: none; }
+    /* ── 기타 섹션 ── */
+    #infoBody { overflow: hidden; transition: max-height .35s ease; max-height: 2000px; }
+    #infoBody.collapsed { max-height: 0; }
+
+    .info-section { margin-bottom: 22px; }
+    .info-section-title { font-size: 0.88rem; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+
+    .info-table-wrap { overflow-x: auto; }
+    .info-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .info-table th, .info-table td {
+      padding: 9px 12px; border: 1px solid var(--border); text-align: left; line-height: 1.5;
+    }
+    .info-table th { background: var(--surf2); color: var(--blue); font-weight: 600; white-space: nowrap; }
+    .info-table td:first-child { white-space: nowrap; color: var(--gold); font-weight: 600; background: rgba(227,179,65,.05); }
+    .info-table tr:hover td { background: rgba(255,255,255,.03); }
+
+    .info-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+    .info-box { background: var(--surf2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+    .info-box-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 5px; }
+    .info-box-val   { font-size: 0.88rem; color: var(--text); font-weight: 500; }
 
     footer {
       text-align: center; color: var(--muted);
       font-size: 0.73rem; margin-top: 8px;
     }
 
-    /* ── 기타 섹션 ── */
-    #infoBody { overflow: hidden; transition: max-height 0.35s ease; max-height: 2000px; }
-    #infoBody.collapsed { max-height: 0; }
-
-    .info-section { margin-bottom: 22px; }
-    .info-section-title {
-      font-size: 0.88rem; font-weight: 700;
-      color: var(--text); margin-bottom: 12px;
-    }
-
-    .info-table-wrap { overflow-x: auto; }
-    .info-table {
-      width: 100%; border-collapse: collapse;
-      font-size: 0.82rem;
-    }
-    .info-table th, .info-table td {
-      padding: 9px 12px;
-      border: 1px solid var(--border);
-      text-align: left;
-      line-height: 1.5;
-    }
-    .info-table th {
-      background: var(--surf2);
-      color: var(--blue); font-weight: 600;
-      white-space: nowrap;
-    }
-    .info-table td:first-child {
-      white-space: nowrap; color: var(--gold);
-      font-weight: 600; background: rgba(227,179,65,.05);
-    }
-    .info-table tr:hover td { background: rgba(255,255,255,.03); }
-
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-    .info-box {
-      background: var(--surf2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px 14px;
-    }
-    .info-box-label { font-size: 0.75rem; color: var(--muted); margin-bottom: 5px; }
-    .info-box-val   { font-size: 0.88rem; color: var(--text); font-weight: 500; }
+    .dis { display: none; }
 
     @media (max-width: 520px) {
-      .form-grid { grid-template-columns: 1fr; }
-      .prices-grid { grid-template-columns: repeat(3, 1fr); }
-      .result-grid { grid-template-columns: 1fr; }
-      header h1 { font-size: 1.4rem; }
+      .form-grid       { grid-template-columns: 1fr; }
+      .prices-grid     { grid-template-columns: repeat(3, 1fr); }
+      .result-grid     { grid-template-columns: 1fr; }
+      .selected-summary{ grid-template-columns: 1fr; }
+      header h1        { font-size: 1.4rem; }
+      .info-grid       { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -294,12 +287,12 @@
 
   <header>
     <h1>복수예비가격 <em>투찰 계산기</em></h1>
-    <p>나라장터 기준 · 예비가격 15개 생성 · 몬테카를로 시뮬레이션 예정가격 예측</p>
+    <p>나라장터 기준 · 예비가격 15개 생성 · 4개 선택 → 예정가격 → 투찰가격 산출</p>
   </header>
 
   <!-- ① 기본 설정 -->
   <div class="card">
-    <div class="card-title">① 기본 설정</div>
+    <div class="card-title"><span class="bar"></span>① 기본 설정</div>
     <div class="form-grid">
 
       <div class="form-group full">
@@ -349,16 +342,24 @@
   <!-- ② 예비가격 선택 -->
   <div class="card dis" id="secPrices">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-      <div class="card-title" style="margin:0;">② 예비가격 선택</div>
+      <div class="card-title" style="margin:0;"><span class="bar"></span>② 예비가격 선택 (4개)</div>
       <button class="btn btn-sm" onclick="onGenerate()">🔄 재생성</button>
     </div>
 
+    <!-- 탭 -->
     <div class="tabs">
-      <button class="tab active" id="tabManual" onclick="switchMode('manual')">직접 선택</button>
-      <button class="tab"        id="tabAuto"   onclick="switchMode('auto')">자동 추천</button>
+      <button class="tab active" id="tabMixed"  onclick="switchMode('mixed')">혼합 선택</button>
+      <button class="tab"        id="tabAuto"   onclick="switchMode('auto')">완전 자동</button>
+      <button class="tab"        id="tabManual" onclick="switchMode('manual')">직접 선택</button>
     </div>
 
-    <div class="note" id="modeNote">15개 예비가격 중 2개를 직접 클릭하여 선택하세요.</div>
+    <div class="note" id="modeNote"></div>
+
+    <!-- 진행 상태 -->
+    <div class="progress-bar" id="progressBar">
+      <span class="progress-txt">선택된 번호</span>
+      <span class="progress-count" id="progressCount">0 / 4개</span>
+    </div>
 
     <div class="prices-grid" id="pricesGrid"></div>
 
@@ -368,70 +369,99 @@
 
   <!-- ③ 결과 -->
   <div class="card dis" id="secResult">
-    <div class="card-title">③ 분석 결과</div>
+    <div class="card-title"><span class="bar"></span>③ 분석 결과</div>
 
-    <div class="selected-balls" id="selBalls"></div>
+    <!-- 선택된 4개 -->
+    <div class="info-section-title" style="font-size:.82rem;color:var(--muted);margin-bottom:10px;">선택된 예비가격 4개</div>
+    <div class="selected-summary" id="selSummary"></div>
 
+    <!-- 예정가격 (4개 평균) -->
+    <div class="avg-row">
+      <div>
+        <div class="avg-label">예정가격 (선택 4개 평균)</div>
+      </div>
+      <div class="avg-val" id="rExpected">—</div>
+    </div>
+
+    <!-- 세부 결과 -->
     <div class="result-grid">
       <div class="res-item">
-        <div class="res-label">예상 예정가격</div>
-        <div class="res-val gold" id="rExpected">—</div>
-        <div class="res-sub" id="rRange">—</div>
-      </div>
-      <div class="res-item">
-        <div class="res-label">추천 투찰금액</div>
+        <div class="res-label">최종 투찰 추천금액</div>
         <div class="res-val green" id="rBid">—</div>
-        <div class="res-sub" id="rBidSub">—</div>
+        <div class="res-sub"   id="rBidSub">—</div>
       </div>
       <div class="res-item">
         <div class="res-label">낙찰하한금액</div>
         <div class="res-val blue" id="rMin">—</div>
-        <div class="res-sub" id="rMinSub">—</div>
+        <div class="res-sub"  id="rMinSub">—</div>
       </div>
       <div class="res-item">
-        <div class="res-label">투찰 유효 범위</div>
-        <div class="res-val" id="rValidMin" style="font-size:.88rem;">—</div>
-        <div class="res-sub" id="rValidMax">—</div>
+        <div class="res-label">투찰 최소금액 (하한)</div>
+        <div class="res-val red" id="rValidMin">—</div>
+        <div class="res-sub"     id="rValidMinSub">낙찰하한 이상이어야 유효</div>
+      </div>
+      <div class="res-item">
+        <div class="res-label">투찰 최대금액 (상한)</div>
+        <div class="res-val" id="rValidMax" style="color:var(--text);">—</div>
+        <div class="res-sub" id="rValidMaxSub">예정가격 이하이어야 유효</div>
       </div>
     </div>
 
     <div class="note" style="margin-top:14px;margin-bottom:0;">
-      ※ 몬테카를로 시뮬레이션(50,000회) 기반 통계적 예측값입니다. 실제 결과와 다를 수 있으며 투찰 판단의 최종 책임은 본인에게 있습니다.
+      ※ 예정가격은 선택된 4개 예비가격의 단순 평균이며, 실제 예정가격은 입찰 당일 낙찰자 선택 결과에 따라 결정됩니다.
     </div>
   </div>
 
-  <!-- ④ 기타 (도구 설명) -->
+  <!-- ④ 기타 -->
   <div class="card" id="secInfo">
-    <div class="card-title" style="cursor:pointer;justify-content:space-between;" onclick="toggleInfo()">
+    <div class="card-title" style="cursor:pointer;justify-content:space-between;margin-bottom:0;"
+         onclick="toggleInfo()">
       <span style="display:flex;align-items:center;gap:8px;">
-        <span style="display:inline-block;width:4px;height:18px;background:var(--blue);border-radius:2px;"></span>
-        기타 · 도구 설명
+        <span class="bar"></span>기타 · 도구 설명
       </span>
       <span id="infoArrow" style="color:var(--muted);font-size:1.1rem;transition:transform .25s;">▼</span>
     </div>
 
-    <div id="infoBody">
+    <div id="infoBody" style="padding-top:20px;">
 
       <div class="info-section">
         <div class="info-section-title">📋 기능 요약</div>
         <div class="info-table-wrap">
           <table class="info-table">
-            <thead>
-              <tr><th>단계</th><th>기능</th></tr>
-            </thead>
+            <thead><tr><th>모드</th><th>방식</th><th>설명</th></tr></thead>
             <tbody>
-              <tr><td>① 기본 설정</td><td>기초금액 입력, 공사 종류 선택, 예상 경쟁업체 수, 사정율, 낙찰하한율 설정</td></tr>
-              <tr><td>② 예비가격 생성</td><td>기초금액 기준 ±2% 범위 내 15개 예비가격 무작위 생성 (재생성 가능)</td></tr>
-              <tr><td>직접 선택 모드</td><td>15개 카드 중 원하는 2개를 직접 클릭하여 선택</td></tr>
-              <tr><td>자동 추천 모드</td><td>몬테카를로 시뮬레이션으로 가장 많이 선택될 것으로 예측된 번호 2개 자동 추천</td></tr>
-              <tr><td>③ 결과 분석</td><td>예상 예정가격 · 추천 투찰금액 · 낙찰하한금액 · 투찰 유효 범위 출력</td></tr>
+              <tr>
+                <td>혼합 선택</td>
+                <td>자동 2개 + 직접 2개</td>
+                <td>시뮬레이션이 추천한 2개는 자동 선택(초록)되며, 나머지 2개를 직접 클릭하여 선택</td>
+              </tr>
+              <tr>
+                <td>완전 자동</td>
+                <td>자동 4개</td>
+                <td>시뮬레이션 기반으로 가장 많이 선택될 것으로 예측된 번호 4개를 자동 선택</td>
+              </tr>
+              <tr>
+                <td>직접 선택</td>
+                <td>직접 4개</td>
+                <td>15개 예비가격 중 원하는 4개를 직접 클릭하여 선택</td>
+              </tr>
+              <tr>
+                <td>예정가격</td>
+                <td>4개 평균</td>
+                <td>선택된 4개 예비가격의 단순 평균값</td>
+              </tr>
+              <tr>
+                <td>투찰가격</td>
+                <td>예정가격 × 사정율</td>
+                <td>예정가격에 사정율(%)을 곱한 최종 투찰 추천금액</td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
 
       <div class="info-section">
-        <div class="info-section-title">📐 예비가격 생성 방식</div>
+        <div class="info-section-title">📐 예비가격 15개 생성 방식</div>
         <div class="info-grid">
           <div class="info-box">
             <div class="info-box-label">기준</div>
@@ -468,69 +498,51 @@
             <div class="info-box-val" style="color:var(--blue);font-size:1.05rem;font-weight:700;">79.25%</div>
           </div>
         </div>
-        <p style="font-size:0.75rem;color:var(--muted);margin-top:10px;">
-          ※ 위 값은 국가계약법 시행규칙 기준 기본값이며, 발주기관·공사 규모에 따라 다를 수 있습니다. 기본 설정란에서 직접 수정하여 사용하세요.
+        <p style="font-size:.75rem;color:var(--muted);margin-top:10px;">
+          ※ 국가계약법 시행규칙 기준 기본값이며 발주기관·공사 규모에 따라 다를 수 있습니다. 기본 설정에서 직접 수정하세요.
         </p>
       </div>
 
-    </div><!-- /infoBody -->
+    </div>
   </div>
 
   <footer>나라장터 복수예비가격 기준 (기초금액 ±2%) · 시뮬레이션 50,000회</footer>
 </div>
 
 <script>
-// ── 기타 섹션 토글 ────────────────────────────────────────
-function toggleInfo() {
-  const body  = $('infoBody');
-  const arrow = $('infoArrow');
-  const collapsed = body.classList.toggle('collapsed');
-  arrow.style.transform = collapsed ? 'rotate(-90deg)' : 'rotate(0deg)';
-}
-
-// ── 낙찰하한율 기본값 ──────────────────────────────────────
+// ── 상수 ──────────────────────────────────────────────────
 const DEFAULT_RATES = { '일반공사': 87.745, '전문공사': 87.745, '용역': 79.25 };
 
 // ── 상태 ──────────────────────────────────────────────────
-let prices      = [];   // 생성된 예비가격 15개
-let selected    = [];   // 선택된 인덱스 (최대 2)
-let recommended = [];   // 자동 추천 인덱스 2개
-let freqCache   = null; // 시뮬레이션 빈도 캐시
-let mode        = 'manual';
+let prices      = [];   // 예비가격 15개
+let autoIdx     = [];   // 자동 추천 인덱스
+let manualIdx   = [];   // 직접 선택 인덱스
+let freqData    = null; // 시뮬레이션 빈도
+let mode        = 'mixed'; // 'mixed' | 'auto' | 'manual'
 
-// ── 유틸 ──────────────────────────────────────────────────
-const $ = id => document.getElementById(id);
-
-function fmt(n) { return Math.round(n).toLocaleString('ko-KR') + '원'; }
+// ── 헬퍼 ──────────────────────────────────────────────────
+const $   = id => document.getElementById(id);
+const fmt = n  => Math.round(n).toLocaleString('ko-KR') + '원';
 
 function toKorean(n) {
   if (!n) return '';
-  const 억 = Math.floor(n / 1e8);
-  const 만 = Math.floor((n % 1e8) / 1e4);
-  const 원 = n % 1e4;
-  let s = '';
-  if (억) s += 억 + '억 ';
-  if (만) s += 만 + '만 ';
-  if (원 && !억) s += 원 + '원';
-  else if (억 || 만) s = s.trimEnd() + '원';
-  return '≈ ' + s;
+  const 억 = Math.floor(n / 1e8), 만 = Math.floor((n % 1e8) / 1e4);
+  return '≈ ' + (억 ? 억 + '억 ' : '') + (만 ? 만 + '만 ' : '') + '원';
 }
 
-function getBase()    { return parseInt($('baseAmount').value.replace(/[^0-9]/g, '')) || 0; }
+function getBase()    { return parseInt($('baseAmount').value.replace(/[^0-9]/g,'')) || 0; }
 function getBidRate() { return parseFloat($('bidRate').value)  || 99.5; }
 function getMinRate() { return parseFloat($('minRate').value)  || 87.745; }
 function getNumComp() { return parseInt($('numComp').value)    || 10; }
 
-// ── 이벤트 핸들러 ─────────────────────────────────────────
+// ── 폼 이벤트 ─────────────────────────────────────────────
 function onAmountInput(el) {
   const raw = el.value.replace(/[^0-9]/g, '');
   el.value = raw ? parseInt(raw).toLocaleString('ko-KR') : '';
   $('amountHint').textContent = toKorean(parseInt(raw) || 0);
 }
-
 function onTypeChange() {
-  const t = $('constructionType').value;
-  $('minRate').value = DEFAULT_RATES[t];
+  $('minRate').value = DEFAULT_RATES[$('constructionType').value];
 }
 
 // ── 예비가격 생성 ─────────────────────────────────────────
@@ -542,190 +554,207 @@ function onGenerate() {
   prices = Array.from({ length: 15 }, () => Math.round(min + Math.random() * (max - min)));
   prices.sort((a, b) => a - b);
 
-  selected = []; recommended = []; freqCache = null;
+  autoIdx = []; manualIdx = []; freqData = null;
 
   $('secPrices').classList.remove('dis');
   $('secResult').classList.add('dis');
 
-  if (mode === 'auto') {
-    runAutoRecommend();
-  } else {
-    setNote('15개 예비가격 중 2개를 직접 클릭하여 선택하세요.');
-    renderGrid(null);
-    syncCalcBtn();
-  }
-
+  applyMode();
   $('secPrices').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // ── 모드 전환 ─────────────────────────────────────────────
 function switchMode(m) {
   mode = m;
-  $('tabManual').classList.toggle('active', m === 'manual');
-  $('tabAuto').classList.toggle('active',   m === 'auto');
-  selected = []; recommended = []; freqCache = null;
+  ['Mixed','Auto','Manual'].forEach(n => {
+    $('tab'+n).classList.toggle('active', m === n.toLowerCase());
+  });
+  autoIdx = []; manualIdx = [];
   $('secResult').classList.add('dis');
+  if (prices.length > 0) applyMode();
+}
 
-  if (prices.length === 0) return;
-
-  if (m === 'auto') {
-    runAutoRecommend();
-  } else {
-    setNote('15개 예비가격 중 2개를 직접 클릭하여 선택하세요.');
-    renderGrid(null);
-    syncCalcBtn();
-  }
+function applyMode() {
+  if (mode === 'auto')  { runFullAuto(); return; }
+  if (mode === 'mixed') { runMixed();    return; }
+  // manual
+  setNote('15개 예비가격 중 4개를 직접 클릭하여 선택하세요.');
+  freqData = null;
+  renderGrid();
+  syncCalc();
 }
 
 // ── 시뮬레이션 ────────────────────────────────────────────
-function simulate(fixedPicks, numComp, iters) {
-  const N = 15;
-  let total = 0;
+function simulate(iters) {
+  const N = 15, numComp = getNumComp();
   const freq = new Array(N).fill(0);
-  const samples = [];
-
   for (let it = 0; it < iters; it++) {
     const cnt = new Array(N).fill(0);
-    fixedPicks.forEach(i => cnt[i]++);
-
     for (let c = 0; c < numComp; c++) {
       let a = (Math.random() * N) | 0, b;
       do { b = (Math.random() * N) | 0; } while (b === a);
       cnt[a]++; cnt[b]++;
     }
-
-    // top-4 by count (tie-break: lower index)
-    const top4 = cnt
-      .map((c, i) => ({ i, c }))
-      .sort((a, b) => b.c - a.c || a.i - b.i)
-      .slice(0, 4)
-      .map(x => x.i);
-
-    const avg = top4.reduce((s, i) => s + prices[i], 0) / 4;
-    total += avg;
-    top4.forEach(i => freq[i]++);
-    if (it < 2000) samples.push(avg);
+    cnt.map((c,i) => ({i,c}))
+       .sort((a,b) => b.c - a.c || a.i - b.i)
+       .slice(0, 4)
+       .forEach(x => freq[x.i]++);
   }
-
-  return {
-    expected:  total / iters,
-    frequency: freq.map(f => f / iters),
-    samples,
-  };
+  return freq.map(f => f / iters);
 }
 
-function runAutoRecommend() {
+function topN(freq, n) {
+  return freq.map((f,i) => ({i,f}))
+             .sort((a,b) => b.f - a.f)
+             .slice(0, n).map(x => x.i);
+}
+
+// 완전 자동 (4개 자동)
+function runFullAuto() {
   setNote('시뮬레이션 실행 중...');
-  renderGrid(null);
-
+  renderGrid();
   setTimeout(() => {
-    const res = simulate([], getNumComp(), 50000);
-    freqCache = res.frequency;
+    freqData = simulate(50000);
+    autoIdx  = topN(freqData, 4);
+    manualIdx = [];
+    setNote('시뮬레이션 결과: 가장 많이 선택될 것으로 예측된 4개가 자동 선택되었습니다. 바로 계산하거나 직접 변경할 수도 있습니다.');
+    renderGrid();
+    syncCalc();
+  }, 30);
+}
 
-    recommended = res.frequency
-      .map((f, i) => ({ i, f }))
-      .sort((a, b) => b.f - a.f)
-      .slice(0, 2)
-      .map(x => x.i);
-
-    selected = [...recommended];
-
-    setNote(
-      `시뮬레이션 결과: 가장 많이 선택될 것으로 예측된 번호를 자동 추천합니다. ` +
-      `번호를 직접 변경할 수도 있습니다.`
-    );
-    renderGrid(freqCache);
-    syncCalcBtn();
+// 혼합 (자동 2 + 직접 2)
+function runMixed() {
+  setNote('시뮬레이션 실행 중...');
+  renderGrid();
+  setTimeout(() => {
+    freqData = simulate(50000);
+    autoIdx  = topN(freqData, 2);
+    manualIdx = [];
+    setNote('자동 추천 2개(초록)가 선택되었습니다. 나머지 2개를 직접 클릭하여 선택하세요.');
+    renderGrid();
+    syncCalc();
   }, 30);
 }
 
 // ── 렌더링 ────────────────────────────────────────────────
-function renderGrid(freq) {
+function renderGrid() {
   const grid = $('pricesGrid');
   grid.innerHTML = '';
+  const totalSelected = autoIdx.length + manualIdx.length;
+  const manualFull    = (mode === 'mixed'  && manualIdx.length >= 2) ||
+                        (mode === 'manual' && manualIdx.length >= 4);
 
   prices.forEach((price, i) => {
+    const isAuto   = autoIdx.includes(i);
+    const isManual = manualIdx.includes(i);
+
     const card = document.createElement('div');
     card.className = 'price-card';
-    if (selected.includes(i))    card.classList.add('selected');
-    if (recommended.includes(i) && mode === 'auto') card.classList.add('recommended');
+    if (isAuto)   card.classList.add('auto');
+    if (isManual) card.classList.add('manual');
 
-    const freqTxt = freq ? `<div class="p-freq">${(freq[i]*100).toFixed(1)}%</div>` : '';
-    const badge   = (recommended.includes(i) && mode === 'auto')
-      ? '<span class="badge">추천</span>' : '';
+    // 선택 불가 처리 (꽉 찼고 이 카드가 미선택일 때)
+    const canSelect = !isAuto && !isManual && !manualFull;
+    if (!isAuto && !isManual && manualFull) card.classList.add('dimmed');
+
+    const badge = isAuto   ? '<span class="badge-auto">자동추천</span>'
+                : isManual ? '<span class="badge-manual">직접선택</span>'
+                : '';
+
+    const freqTxt = freqData
+      ? `<div class="p-freq">${(freqData[i]*100).toFixed(1)}%</div>` : '';
 
     card.innerHTML = `
       ${badge}
-      <div class="p-num">${i + 1}번</div>
-      <div class="p-man">${Math.round(price / 10000).toLocaleString()}만</div>
+      <div class="p-num">${i+1}번</div>
+      <div class="p-man">${Math.round(price/10000).toLocaleString()}만</div>
       <div class="p-won">${price.toLocaleString()}원</div>
       ${freqTxt}
     `;
-    card.onclick = () => toggleSelect(i);
+
+    if (!isAuto) {
+      card.onclick = () => toggleManual(i);
+    }
     grid.appendChild(card);
   });
+
+  // 진행 카운트
+  $('progressCount').textContent = `${totalSelected} / 4개`;
 }
 
-function toggleSelect(idx) {
-  if (selected.includes(idx)) {
-    selected = selected.filter(i => i !== idx);
+function toggleManual(idx) {
+  if (manualIdx.includes(idx)) {
+    manualIdx = manualIdx.filter(i => i !== idx);
   } else {
-    if (selected.length >= 2) selected.shift();
-    selected.push(idx);
+    const maxManual = mode === 'mixed' ? 2 : 4;
+    if (manualIdx.length >= maxManual) return;
+    manualIdx.push(idx);
   }
-  renderGrid(freqCache);
-  syncCalcBtn();
+  renderGrid();
+  syncCalc();
 }
 
-function syncCalcBtn() {
-  const ok = selected.length === 2;
-  $('btnCalc').disabled = !ok;
+function syncCalc() {
+  const total = autoIdx.length + manualIdx.length;
+  $('btnCalc').disabled = total !== 4;
 }
 
 function setNote(txt) { $('modeNote').textContent = txt; }
 
 // ── 결과 계산 ─────────────────────────────────────────────
 function onCalculate() {
-  if (selected.length !== 2) return;
+  const allIdx = [...autoIdx, ...manualIdx].sort((a,b) => a - b);
+  if (allIdx.length !== 4) return;
 
   const bidRate = getBidRate();
   const minRate = getMinRate();
 
-  const res = simulate(selected, getNumComp(), 50000);
-
-  const expected = res.expected;
+  // 예정가격 = 4개 평균
+  const sum      = allIdx.reduce((s, i) => s + prices[i], 0);
+  const expected = sum / 4;
   const bidAmt   = expected * bidRate / 100;
   const minAmt   = expected * minRate / 100;
 
-  // 10th ~ 90th percentile
-  const sorted = [...res.samples].sort((a, b) => a - b);
-  const p10 = sorted[Math.floor(sorted.length * 0.10)];
-  const p90 = sorted[Math.floor(sorted.length * 0.90)];
-
-  // 선택 공 표시
-  const ballsEl = $('selBalls');
-  ballsEl.innerHTML =
-    selected.map(i => `
-      <div style="text-align:center">
-        <div class="ball ball-gold">
-          <span>${i + 1}</span>
-          <small>${Math.round(prices[i]/10000)}만원</small>
+  // 선택된 4개 카드 표시
+  const summary = $('selSummary');
+  summary.innerHTML = allIdx.map(i => {
+    const isAuto = autoIdx.includes(i);
+    const cls    = isAuto ? 'auto'   : 'manual';
+    const lbl    = isAuto ? '자동추천' : '직접선택';
+    return `
+      <div class="sel-item type-${cls}">
+        <div class="sel-circle ${cls}">${i+1}</div>
+        <div class="sel-info">
+          <div class="sel-type ${cls}">${lbl} · ${i+1}번</div>
+          <div class="sel-price">${prices[i].toLocaleString()}원</div>
         </div>
       </div>
-    `).join('<div class="plus-icon">+</div>');
+    `;
+  }).join('');
 
-  $('rExpected').textContent = fmt(expected);
-  $('rRange').textContent    = `예측 범위: ${fmt(p10)} ~ ${fmt(p90)}`;
-  $('rBid').textContent      = fmt(bidAmt);
-  $('rBidSub').textContent   = `사정율 ${bidRate}% 적용`;
-  $('rMin').textContent      = fmt(minAmt);
-  $('rMinSub').textContent   = `낙찰하한율 ${minRate}% 적용`;
-  $('rValidMin').textContent = `최소: ${fmt(minAmt)}`;
-  $('rValidMax').textContent = `최대: ${fmt(expected)} (예정가격 이하)`;
+  $('rExpected').textContent   = fmt(expected);
+  $('rBid').textContent        = fmt(bidAmt);
+  $('rBidSub').textContent     = `사정율 ${bidRate}% 적용`;
+  $('rMin').textContent        = fmt(minAmt);
+  $('rMinSub').textContent     = `낙찰하한율 ${minRate}% 적용`;
+  $('rValidMin').textContent   = fmt(minAmt);
+  $('rValidMax').textContent   = fmt(expected);
 
   $('secResult').classList.remove('dis');
   $('secResult').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
+
+// ── 기타 토글 ─────────────────────────────────────────────
+function toggleInfo() {
+  const body  = $('infoBody');
+  const arrow = $('infoArrow');
+  const c = body.classList.toggle('collapsed');
+  arrow.style.transform = c ? 'rotate(-90deg)' : 'rotate(0deg)';
+}
+
+// 초기 노트 세팅
+setNote('기초금액을 입력하고 예비가격을 생성하세요.');
 </script>
 </body>
 </html>
