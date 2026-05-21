@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>로또 번호 생성기</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 16px;
+      color: #fff;
+    }
+
+    h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 6px;
+      background: linear-gradient(90deg, #ffd700, #ff8c00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      color: #aab4c8;
+      font-size: 0.95rem;
+      margin-bottom: 36px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 32px;
+      width: 100%;
+      max-width: 560px;
+      backdrop-filter: blur(10px);
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .controls label {
+      font-size: 0.9rem;
+      color: #aab4c8;
+      white-space: nowrap;
+    }
+
+    .controls select {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .controls select option { background: #1a1a2e; }
+
+    .btn-generate {
+      flex: 1;
+      min-width: 160px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #f7971e, #ffd200);
+      color: #1a1a2e;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 20px rgba(247,151,30,0.4);
+    }
+
+    .btn-generate:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 28px rgba(247,151,30,0.55);
+    }
+
+    .btn-generate:active { transform: translateY(0); }
+
+    .tickets-wrapper { display: flex; flex-direction: column; gap: 16px; }
+
+    .ticket {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: slideIn 0.35s ease both;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .ticket-label {
+      font-size: 0.78rem;
+      color: #7a8aa8;
+      font-weight: 600;
+      min-width: 28px;
+    }
+
+    .balls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .ball {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #fff;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.3), inset 0 -2px 4px rgba(0,0,0,0.2);
+      flex-shrink: 0;
+      animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.5); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    /* 로또 공식 색상 */
+    .ball.y { background: radial-gradient(circle at 35% 35%, #ffe566, #f7b731); } /* 1–10 노랑 */
+    .ball.b { background: radial-gradient(circle at 35% 35%, #74c7f5, #1a8fd1); } /* 11–20 파랑 */
+    .ball.r { background: radial-gradient(circle at 35% 35%, #ff7f7f, #e03030); } /* 21–30 빨강 */
+    .ball.g { background: radial-gradient(circle at 35% 35%, #aaa, #777); }       /* 31–40 회색 */
+    .ball.gr { background: radial-gradient(circle at 35% 35%, #a8e063, #56ab2f); } /* 41–45 초록 */
+
+    .empty-state {
+      text-align: center;
+      color: #4a5568;
+      font-size: 0.95rem;
+      padding: 24px 0;
+    }
+
+    .btn-clear {
+      display: none;
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #aab4c8;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-clear:hover { background: rgba(255,255,255,0.12); }
+
+    .footer {
+      margin-top: 28px;
+      color: #4a5568;
+      font-size: 0.78rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎱 로또 번호 생성기</h1>
+  <p class="subtitle">행운의 번호를 뽑아보세요! (1 ~ 45)</p>
+
+  <div class="card">
+    <div class="controls">
+      <label for="count">게임 수</label>
+      <select id="count">
+        <option value="1">1게임</option>
+        <option value="2">2게임</option>
+        <option value="3">3게임</option>
+        <option value="4">4게임</option>
+        <option value="5" selected>5게임</option>
+      </select>
+      <button class="btn-generate" onclick="generate()">번호 생성하기</button>
+    </div>
+
+    <div id="tickets" class="tickets-wrapper">
+      <p class="empty-state">버튼을 눌러 번호를 생성하세요</p>
+    </div>
+
+    <button class="btn-clear" id="clearBtn" onclick="clearTickets()">초기화</button>
+  </div>
+
+  <p class="footer">※ 이 번호는 무작위로 생성되며 당첨을 보장하지 않습니다.</p>
+
+  <script>
+    function ballClass(n) {
+      if (n <= 10)  return 'y';
+      if (n <= 20)  return 'b';
+      if (n <= 30)  return 'r';
+      if (n <= 40)  return 'g';
+      return 'gr';
+    }
+
+    function pickNumbers() {
+      const pool = Array.from({length: 45}, (_, i) => i + 1);
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+      }
+      return pool.slice(0, 6).sort((a, b) => a - b);
+    }
+
+    function generate() {
+      const count = parseInt(document.getElementById('count').value);
+      const container = document.getElementById('tickets');
+      container.innerHTML = '';
+
+      const labels = ['A', 'B', 'C', 'D', 'E'];
+      for (let i = 0; i < count; i++) {
+        const nums = pickNumbers();
+        const ticket = document.createElement('div');
+        ticket.className = 'ticket';
+        ticket.style.animationDelay = `${i * 0.06}s`;
+
+        ticket.innerHTML = `
+          <span class="ticket-label">${labels[i]}</span>
+          <div class="balls">
+            ${nums.map((n, idx) => `
+              <div class="ball ${ballClass(n)}" style="animation-delay:${i * 0.06 + idx * 0.05}s">
+                ${n}
+              </div>`).join('')}
+          </div>`;
+
+        container.appendChild(ticket);
+      }
+
+      document.getElementById('clearBtn').style.display = 'block';
+    }
+
+    function clearTickets() {
+      const container = document.getElementById('tickets');
+      container.innerHTML = '<p class="empty-state">버튼을 눌러 번호를 생성하세요</p>';
+      document.getElementById('clearBtn').style.display = 'none';
+    }
+  </script>
+
+</body>
+</html>
